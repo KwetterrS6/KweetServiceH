@@ -63,6 +63,7 @@ namespace KweetService.EventProcessing
                     var user = _mapper.Map<User>(userCreatedDto);
                     if(!repo.ExternalUserExists(user.ExternalID))
                     {
+                        user.Id = 0;
                         repo.CreateUser(user);
                         repo.SaveChanges();
                         Console.WriteLine("--> User added!");

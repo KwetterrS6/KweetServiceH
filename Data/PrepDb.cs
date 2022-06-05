@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using KweetService.Models;
-using KweetService.SyncDataServices.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace KweetService.Data
 {
@@ -13,25 +11,21 @@ namespace KweetService.Data
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
-                var grpcClient = serviceScope.ServiceProvider.GetService<IUserDataClient>();
-
-                var users = grpcClient.GetAllUsers();
-
-                SeedData(serviceScope.ServiceProvider.GetService<IKweetRepo>(), users);
+                SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>());
             }
         }
-        
-        private static void SeedData(IKweetRepo repo, IEnumerable<User> users)
-        {
-            Console.WriteLine("Seeding new users...");
 
-            foreach (var user in users)
+        private static void SeedData(AppDbContext context)
+        {
+
+            Console.WriteLine("--> Attempting to apply migrations...");
+            try
             {
-                if(!repo.ExternalUserExists(user.ExternalID))
-                {
-                    repo.CreateUser(user);
-                }
-                repo.SaveChanges();
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"--> Could not run migrations: {ex.Message}");
             }
         }
     }
