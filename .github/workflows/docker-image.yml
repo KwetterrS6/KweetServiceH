@@ -1,4 +1,4 @@
-name: userservice CI
+name: kweetservice CI
 
 on:
   push:
