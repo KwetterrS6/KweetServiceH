@@ -1,4 +1,4 @@
-name: kweetservice CI
+name: kweetservice CI+CD
 
 on:
   push:
